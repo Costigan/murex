@@ -61,6 +61,12 @@ func (v *Variables) GetValue(name string) interface{} {
 	case v.global:
 		return v.getValue(name)
 
+	case name == "PWD":
+		return v.process.GetPwd()
+
+	case name == "PWDHIST":
+		return v.process.GetPwdHist()
+
 	case name == "SELF":
 		return getVarSelf(v.process)
 
@@ -108,6 +114,13 @@ func (v *Variables) GetString(name string) string {
 		return val
 		//panic(errNoDirectGlobalMethod)
 
+	case name == "PWD":
+		return v.process.GetPwd()
+
+	case name == "PWDHIST":
+		b, _ := json.Marshal(v.process.GetPwdHist(), v.process.Stdout.IsTTY())
+		return string(b)
+
 	case name == "SELF":
 		b, _ := json.Marshal(getVarSelf(v.process), v.process.Stdout.IsTTY())
 		return string(b)
@@ -152,6 +165,12 @@ func (v *Variables) GetDataType(name string) string {
 		return dt
 		//panic(errNoDirectGlobalMethod)
 
+	case name == "PWD":
+		return types.String
+
+	case name == "PWDHIST":
+		return types.Json
+
 	case name == "SELF":
 		return types.Json
 
@@ -194,7 +213,7 @@ func (v *Variables) getDataType(name string) (string, bool) {
 // Set writes a variable
 func (v *Variables) Set(p *Process, name string, value interface{}, dataType string) error {
 	switch name {
-	case "SELF", "ARGS", "_":
+	case "PWD", "PWDHIST", "SELF", "ARGS", "_":
 		return errVariableReserved
 	}
 
@@ -247,7 +266,7 @@ func (v *Variables) Dump() interface{} {
 }
 
 // DumpVariables returns a map of the variables and values for all variables
-// in scope.
+// in scope
 func DumpVariables(p *Process) map[string]interface{} {
 	m := make(map[string]interface{})
 

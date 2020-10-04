@@ -39,6 +39,10 @@ func (dtc DelayedTabContext) AppendSuggestions(suggestions []string) {
 	dtc.rl.mutex.Lock()
 	defer dtc.rl.mutex.Unlock()
 
+	if dtc.rl.tcDescriptions == nil {
+		dtc.rl.tcDescriptions = make(map[string]string)
+	}
+
 	for i := range suggestions {
 		select {
 		case <-dtc.Context.Done():

@@ -113,7 +113,7 @@ func matchFilesystem(s string, filesToo bool, act *AutoCompleteT) []string {
 func partialPath(s string) (path, partial string) {
 	expanded := variables.ExpandString(s)
 	split := strings.Split(expanded, consts.PathSlash)
-	path = strings.Join(split[:len(split)-1], consts.PathSlash)
+	path = lang.ShellProcess.GetPwd() + consts.PathSlash + strings.Join(split[:len(split)-1], consts.PathSlash)
 	partial = split[len(split)-1]
 
 	if len(s) > 0 && s[0] == consts.PathSlash[0] {
@@ -166,7 +166,7 @@ func matchFilesAndDirsOnce(s string) (items []string) {
 }
 
 func matchRecursive(ctx context.Context, s string, filesToo bool, dtc *readline.DelayedTabContext) (hierarchy []string) {
-	s = variables.ExpandString(s)
+	s = lang.ShellProcess.GetPwd() + consts.PathSlash + variables.ExpandString(s)
 
 	maxDepth, err := lang.ShellProcess.Config.Get("shell", "recursive-max-depth", types.Integer)
 	if err != nil {

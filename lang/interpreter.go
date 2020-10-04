@@ -37,6 +37,12 @@ func compile(tree *astNodes, parent *Process) (procs []Process) {
 		//procs[i].hasTerminated = make(chan bool, 1)
 		procs[i].PromptId = parent.PromptId
 
+		// This shouldn't be needed as they're not container FIDs (ie not used
+		// as scoping parents)
+		//procs[i].pwd = parent.pwd
+		//procs[i].pwdHist = make([]string, len(parent.pwdHist))
+		//copy(procs[i].pwdHist, parent.pwdHist)
+
 		procs[i].FileRef = &ref.File{Source: parent.FileRef.Source}
 
 		if (*tree)[i].LineNumber == 0 {

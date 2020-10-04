@@ -92,7 +92,8 @@ To get a list of every flag supported by `runtime`
         "--tests",
         "--unmarshallers",
         "--variables",
-        "--writearray"
+        "--writearray",
+        "--pwd"
     ]
     
 Please also note that you can supply more than one flag. However when you
@@ -171,6 +172,8 @@ flag names. eg
     Lists builtin pipes compiled into _murex_. These can be then be defined as named-pipes
 * `--privates`
     Lists all _murex_ private functions
+* `--pwd`
+    Returns murex's internal values for processes working directories
 * `--readarray`
     Lists all builtin data-types which support ReadArray()
 * `--readmap`
@@ -178,7 +181,7 @@ flag names. eg
 * `--sources`
     Lists all loaded murex sources
 * `--summaries`
-    Outputs all the override summaries 
+    Outputs all the override summaries
 * `--test-results`
     A dump of any unreported test results
 * `--tests`

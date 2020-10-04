@@ -11,8 +11,6 @@ import (
 	"github.com/lmorg/murex/lang/proc/runmode"
 	"github.com/lmorg/murex/lang/proc/state"
 	"github.com/lmorg/murex/lang/ref"
-	"github.com/lmorg/murex/lang/types"
-	"github.com/lmorg/murex/utils/json"
 )
 
 // InitEnv initialises murex. Exported function to enable unit tests.
@@ -41,17 +39,23 @@ func InitEnv() {
 	os.Setenv("SHELL", shellEnv)
 
 	// Pre-populate $PWDHIST with current working directory
-	s, _ := os.Getwd()
+	/*s, _ := os.Getwd()
 	pwd := []string{s}
 	if b, err := json.Marshal(&pwd, false); err == nil {
 		//ShellProcess.Variables.Set("PWDHIST", string(b), types.Json)
 		GlobalVariables.Set(ShellProcess, "PWDHIST", string(b), types.Json)
-	}
+	}*/
+	ShellProcess.pwd, _ = os.Getwd()
+	ShellProcess.pwdHist = []string{ShellProcess.pwd}
 }
 
 // NewTestProcess creates a dummy process for testing in Go (ie `go test`)
 func NewTestProcess() (p *Process) {
 	p = new(Process)
+	p.Parent = p
+	p.Scope = p
+	p.Previous = p
+	p.Next = p
 	p.Stdin = new(null.Null)
 	p.Stdout = new(null.Null)
 	p.Stderr = new(null.Null)
@@ -59,6 +63,9 @@ func NewTestProcess() (p *Process) {
 	p.Variables = NewVariables(p)
 	p.FileRef = &ref.File{Source: &ref.Source{Module: "builtin/testing"}}
 	p.Context, p.Done = context.WithTimeout(context.Background(), 60*time.Second)
+
+	p.pwd, _ = os.Getwd()
+	p.pwdHist = []string{p.pwd}
 
 	GlobalFIDs.Register(p)
 

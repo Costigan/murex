@@ -51,6 +51,7 @@ const (
 	fDebug         = "--debug"
 	fSources       = "--sources"
 	fSummaries     = "--summaries"
+	fPwd           = "--pwd"
 	fHelp          = "--help"
 )
 
@@ -82,6 +83,7 @@ var flags = map[string]string{
 	fDebug:         types.Boolean,
 	fSources:       types.Boolean,
 	fSummaries:     types.Boolean,
+	fPwd:           types.Boolean,
 	fHelp:          types.Boolean,
 }
 
@@ -186,6 +188,16 @@ func cmdRuntime(p *lang.Process) error {
 			ret[fSources[2:]] = ref.History.Dump()
 		case fSummaries:
 			ret[fSummaries[2:]] = shell.Summary.Dump()
+		case fPwd:
+			pwd, err := os.Getwd()
+			if err != nil {
+				return err
+			}
+			ret[fPwd[2:]] = map[string]string{
+				"OS":           pwd,
+				"ShellProcess": lang.ShellProcess.GetPwd(),
+				"Parent":       p.GetPwd(),
+			}
 		case fHelp:
 			ret[fHelp[2:]] = help()
 		default:

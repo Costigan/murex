@@ -50,6 +50,9 @@ func execute(p *Process) error {
 		cmd.Process.Kill()
 	}
 
+	cmd.Dir = p.GetPwd()
+	cmd.Env = []string{"PWD=" + cmd.Dir}
+
 	switch {
 	case p.IsMethod:
 		cmd.Stdin = p.Stdin
@@ -94,8 +97,6 @@ func execute(p *Process) error {
 			return err
 		}
 	}
-
-	//debug.Log("exec env:",cmd.Env)
 
 	return nil
 }

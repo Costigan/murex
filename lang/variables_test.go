@@ -199,6 +199,8 @@ func TestReservedVarables(t *testing.T) {
 	reserved := []string{
 		"SELF",
 		"ARGS",
+		"PWD",
+		"PWDHIST",
 	}
 
 	count.Tests(t, len(reserved))

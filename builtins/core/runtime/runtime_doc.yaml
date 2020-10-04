@@ -94,7 +94,8 @@
         "--tests",
         "--unmarshallers",
         "--variables",
-        "--writearray"
+        "--writearray",
+        "--pwd"
     ]
     ```
 
@@ -189,7 +190,9 @@
     --sources: >-
       Lists all loaded murex sources
     --summaries: >-
-      Outputs all the override summaries 
+      Outputs all the override summaries
+    --pwd: >-
+      Returns murex's internal values for processes working directories
     --help: >-
       Outputs a list of `runtimes`'s flags
 

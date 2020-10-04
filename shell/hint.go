@@ -3,6 +3,7 @@ package shell
 import (
 	"fmt"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/lmorg/murex/builtins/docs"
@@ -13,8 +14,8 @@ import (
 	"github.com/lmorg/murex/shell/hintsummary"
 	"github.com/lmorg/murex/shell/history"
 	"github.com/lmorg/murex/shell/variables"
-	"github.com/lmorg/murex/utils"
 	"github.com/lmorg/murex/utils/ansi"
+	"github.com/lmorg/murex/utils/consts"
 	"github.com/lmorg/murex/utils/escape"
 	"github.com/lmorg/murex/utils/man"
 	"github.com/lmorg/murex/utils/which"
@@ -43,8 +44,8 @@ func hintText(line []rune, pos int) []rune {
 	}*/
 
 	if cmd == "cd" && len(pt.Parameters) > 0 && len(pt.Parameters[0]) > 0 {
-		path := utils.NormalisePath(pt.Parameters[0])
-		return []rune("Change directory: " + path)
+		s := path.Clean(lang.ShellProcess.GetPwd() + consts.PathSlash + pt.Parameters[0])
+		return []rune("Change directory: " + s)
 	}
 
 	// check if a custom summary has been set

@@ -93,6 +93,10 @@ func (p *Process) Fork(flags int) *Fork {
 	//fork.ColNumber = p.ColNumber
 	fork.IsBackground = flags&F_BACKGROUND != 0 || p.IsBackground
 	fork.PromptId = p.PromptId
+	fork.pwd = p.GetPwd()
+	pwdhist := p.GetPwdHist()
+	fork.pwdHist = make([]string, len(pwdhist))
+	copy(fork.pwdHist, pwdhist)
 
 	fork.Previous = p
 	fork.Next = p.Next

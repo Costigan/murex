@@ -6,8 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/lmorg/murex/utils/cd"
-
 	"github.com/lmorg/murex/config/profile"
 	"github.com/lmorg/murex/lang"
 )
@@ -18,8 +16,9 @@ Usage: murex-package install         uri
                      reload
                      enable|disable  package[/module]
                      import          [uri|local path]packages.json
-					 status
-					 list            enabled|disabled
+                     status
+                     list            enabled|disabled
+                     cd              package
 `
 
 func init() {
@@ -96,7 +95,7 @@ func cdPackage(p *lang.Process) error {
 		return fmt.Errorf("`%s` is not a directory", f.Name())
 	}
 
-	return cd.Chdir(p, profile.ModulePath+f.Name())
+	return p.SetPwd(profile.ModulePath + f.Name())
 }
 
 func updateModules(p *lang.Process) error {

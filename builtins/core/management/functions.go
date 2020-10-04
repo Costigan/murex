@@ -10,7 +10,6 @@ import (
 	"github.com/lmorg/murex/lang"
 	"github.com/lmorg/murex/lang/types"
 	"github.com/lmorg/murex/shell/autocomplete"
-	"github.com/lmorg/murex/utils/cd"
 	"github.com/lmorg/murex/utils/json"
 	"github.com/lmorg/murex/utils/man"
 	"github.com/lmorg/murex/utils/posix"
@@ -130,8 +129,8 @@ func cmdCd(p *lang.Process) error {
 		return err
 	}
 
-	err = cd.Chdir(p, path)
-
+	//err = cd.Chdir(p, path)
+	err = p.SetPwd(path)
 	return err
 }
 

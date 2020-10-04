@@ -4,8 +4,11 @@ import (
 	"context"
 	"errors"
 	"os/exec"
+	"path"
 	"sync"
 	"time"
+
+	"github.com/lmorg/murex/utils/consts"
 
 	"github.com/lmorg/murex/config"
 	"github.com/lmorg/murex/lang/proc/parameters"
@@ -22,7 +25,8 @@ type Process struct {
 	Id                 uint32
 	Name               string
 	Parameters         parameters.Parameters
-	Path               string
+	pwd                string
+	pwdHist            []string
 	Context            context.Context
 	Stdin              stdio.Io
 	Stdout             stdio.Io
@@ -100,6 +104,32 @@ func (p *Process) ErrIfNotAMethod() (err error) {
 		err = errors.New("`" + p.Name + "` expects to be pipelined")
 	}
 	return
+}
+
+// GetPwd returns the FID working directory
+func (p *Process) GetPwd() string { return p.Scope.pwd }
+
+// GetPwdHist returns the PWD history
+func (p *Process) GetPwdHist() []string { return p.Scope.pwdHist }
+
+// SetPwd changes the FID working directory and history
+func (p *Process) SetPwd(path string) error {
+	path = cleanPath(p.GetPwd(), path)
+	p.Scope.pwd = path
+	p.Scope.pwdHist = append(p.pwdHist, path)
+	return nil
+}
+
+func cleanPath(old, new string) string {
+	if len(new) == 0 {
+		return old
+	}
+
+	if new[0] == consts.PathSlash[0] {
+		return path.Clean(new)
+	}
+
+	return path.Clean(old + consts.PathSlash + new)
 }
 
 type foregroundProc struct {

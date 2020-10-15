@@ -5,16 +5,11 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"regexp"
-	"time"
 
 	"github.com/lmorg/murex/config"
 	"github.com/lmorg/murex/lang"
 	"github.com/lmorg/murex/lang/proc/parameters"
-	"github.com/lmorg/murex/lang/proc/runmode"
-	"github.com/lmorg/murex/lang/ref"
 	"github.com/lmorg/murex/lang/types"
 	"github.com/lmorg/murex/shell"
 	"github.com/lmorg/murex/utils/json"
@@ -24,7 +19,6 @@ import (
 func init() {
 	lang.GoFunctions["args"] = cmdArgs
 	lang.GoFunctions["params"] = cmdParams
-	lang.GoFunctions["source"] = cmdSource
 	lang.GoFunctions["."] = cmdSource
 	lang.GoFunctions["version"] = cmdVersion
 	lang.GoFunctions["murex-parser"] = cmdParser
@@ -101,60 +95,6 @@ func quickHash(s string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(s))
 	return base64.RawURLEncoding.EncodeToString(hasher.Sum(nil))
-}
-
-func cmdSource(p *lang.Process) error {
-	var (
-		block []rune
-		name  string
-		err   error
-		b     []byte
-	)
-
-	if p.IsMethod {
-		b, err = p.Stdin.ReadAll()
-		if err != nil {
-			return err
-		}
-		block = []rune(string(b))
-		name = "<stdin>"
-
-	} else {
-		block, err = p.Parameters.Block(0)
-		if err == nil {
-			b = []byte(string(block))
-			name = "N/A"
-
-		} else {
-			// get block from file
-			name, err = p.Parameters.String(0)
-			if err != nil {
-				return err
-			}
-
-			file, err := os.Open(name)
-			if err != nil {
-				return err
-			}
-
-			b, err = ioutil.ReadAll(file)
-			if err != nil {
-				return err
-			}
-			block = []rune(string(b))
-		}
-	}
-
-	module := quickHash(name + time.Now().String())
-	fileRef := &ref.File{Source: ref.History.AddSource(name, "source/"+module, b)}
-
-	p.RunMode = runmode.Normal
-	fork := p.Fork(lang.F_FUNCTION | lang.F_NEW_MODULE | lang.F_NO_STDIN)
-
-	fork.Name = p.Name
-	fork.FileRef = fileRef
-	p.ExitNum, err = fork.Execute(block)
-	return err
 }
 
 var rxVersionNum = regexp.MustCompile(`^[0-9]+\.[0-9]+`)

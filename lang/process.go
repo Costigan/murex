@@ -12,6 +12,7 @@ import (
 	"github.com/lmorg/murex/builtins/pipes/streams"
 	"github.com/lmorg/murex/config"
 	"github.com/lmorg/murex/debug"
+	"github.com/lmorg/murex/lang/envvars"
 	"github.com/lmorg/murex/lang/proc/pipes"
 	"github.com/lmorg/murex/lang/proc/state"
 	"github.com/lmorg/murex/lang/types"
@@ -37,6 +38,9 @@ var (
 
 	// GlobalVariables is a table of global variables
 	GlobalVariables = NewGlobals()
+
+	// EnvVars is a table of exported environmental variables
+	EnvVars = envvars.New()
 
 	// GlobalAliases is a table of global aliases
 	GlobalAliases = NewAliases()

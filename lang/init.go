@@ -32,19 +32,13 @@ func InitEnv() {
 	ShellProcess.FileRef = &ref.File{Source: &ref.Source{Module: config.AppName}}
 
 	// Sets $SHELL to be murex
-	shellEnv, err := os.Executable()
+	/*shellEnv, err := os.Executable()
 	if err != nil {
 		shellEnv = ShellProcess.Name
 	}
-	os.Setenv("SHELL", shellEnv)
+	os.Setenv("SHELL", shellEnv)*/
 
 	// Pre-populate $PWDHIST with current working directory
-	/*s, _ := os.Getwd()
-	pwd := []string{s}
-	if b, err := json.Marshal(&pwd, false); err == nil {
-		//ShellProcess.Variables.Set("PWDHIST", string(b), types.Json)
-		GlobalVariables.Set(ShellProcess, "PWDHIST", string(b), types.Json)
-	}*/
 	ShellProcess.pwd, _ = os.Getwd()
 	ShellProcess.pwdHist = []string{ShellProcess.pwd}
 }

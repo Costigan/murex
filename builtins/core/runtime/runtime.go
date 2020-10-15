@@ -137,7 +137,10 @@ func cmdRuntime(p *lang.Process) error {
 			if err != nil {
 				return err
 			}
-			ret[fExports[2:]] = m
+			ret[fExports[2:]] = map[string]interface{}{
+				"OS":    m,
+				"Shell": lang.EnvVars.Dump(),
+			}
 		case fAliases:
 			ret[fAliases[2:]] = lang.GlobalAliases.Dump()
 		case fConfig:

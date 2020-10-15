@@ -51,7 +51,7 @@ func execute(p *Process) error {
 	}
 
 	cmd.Dir = p.GetPwd()
-	cmd.Env = []string{"PWD=" + cmd.Dir}
+	cmd.Env = append(EnvVars.Dump(), "PWD="+cmd.Dir)
 
 	switch {
 	case p.IsMethod:

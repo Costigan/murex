@@ -3,10 +3,10 @@ package typemgmt
 import (
 	"errors"
 	"fmt"
-	"os"
 	"regexp"
 
 	"github.com/lmorg/murex/lang"
+	"github.com/lmorg/murex/lang/proc/runmode"
 	"github.com/lmorg/murex/lang/types"
 	"github.com/lmorg/murex/shell/autocomplete"
 	"github.com/lmorg/murex/utils"
@@ -22,9 +22,15 @@ func init() {
 	lang.GoFunctions["unset"] = cmdUnexport
 }
 
-func cmdSet(p *lang.Process) error      { return set(p, p.Variables) }
-func cmdUnset(p *lang.Process) error    { return unset(p, p.Variables) }
-func cmdGlobal(p *lang.Process) error   { return set(p, lang.GlobalVariables) }
+func cmdSet(p *lang.Process) error   { return set(p, p.Variables) }
+func cmdUnset(p *lang.Process) error { return unset(p, p.Variables) }
+func cmdGlobal(p *lang.Process) error {
+	block, err := p.Parameters.Block(0)
+	if err == nil {
+		return globalSource(p, block)
+	}
+	return set(p, lang.GlobalVariables)
+}
 func cmdUnglobal(p *lang.Process) error { return unset(p, lang.GlobalVariables) }
 
 func set(p *lang.Process, v *lang.Variables) error {
@@ -82,6 +88,16 @@ func set(p *lang.Process, v *lang.Variables) error {
 	return v.Set(p, name, iface, dataType)
 }
 
+func globalSource(p *lang.Process, block []rune) (err error) {
+	p.RunMode = runmode.Normal
+	fork := lang.ShellProcess.Fork(lang.F_PARENT_VARTABLE | lang.F_NO_STDIN)
+
+	fork.Name = p.Name
+	fork.FileRef = p.FileRef
+	p.ExitNum, err = fork.Execute(block)
+	return err
+}
+
 func unset(p *lang.Process, v *lang.Variables) error {
 	p.Stdout.SetDataType(types.Null)
 
@@ -123,22 +139,27 @@ func cmdExport(p *lang.Process) error {
 			return err
 		}
 		b = utils.CrLfTrim(b)
-		return os.Setenv(params, string(b))
+		//return os.Setenv(params, string(b))
+		lang.EnvVars.Set(params, string(b))
+		return nil
 	}
 
 	// Set env as parameters:
 	if rxVarName.MatchString(params) {
-		return os.Setenv(params, "")
+		//return os.Setenv(params, "")
+		lang.EnvVars.Set(params, "")
+		return nil
 	}
 
 	match := rxSet.FindAllStringSubmatch(params, -1)
 	if len(match) == 0 || len(match[0]) < 3 {
 		return errors.New("Error parsing export parameters. Expected: name[=value]")
 	}
-	err := os.Setenv(match[0][1], match[0][2])
+	/*err := os.Setenv(match[0][1], match[0][2])
 	if err != nil {
 		return err
-	}
+	}*/
+	lang.EnvVars.Set(match[0][1], match[0][2])
 
 	if match[0][1] == "PATH" {
 		autocomplete.UpdateGlobalExeList()
@@ -159,7 +180,8 @@ func cmdUnexport(p *lang.Process) error {
 		return err
 	}
 
-	err = os.Unsetenv(varName)
+	//err = os.Unsetenv(varName)
+	err = lang.EnvVars.Unset(varName)
 	return err
 }
 

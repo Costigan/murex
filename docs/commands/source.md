@@ -56,6 +56,8 @@ Execute a code block from parameter
   Query or define _murex_ runtime settings
 * [commands/`function`](../commands/function.md):
   Define a function block
+* [commands/`global`](../commands/global.md):
+  Define a global variable and set it's value
 * [commands/`private`](../commands/private.md):
   Define a private function block
 * [commands/`runtime`](../commands/runtime.md):

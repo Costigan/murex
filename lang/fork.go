@@ -142,6 +142,8 @@ func (p *Process) Fork(flags int) *Fork {
 			fork.Variables = p.Variables
 			fork.Id = p.Id
 
+		case flags&F_PARENT_VARTABLE != 0:
+
 		case flags&F_NEW_VARTABLE != 0:
 			//fork.Parent = fork.Process
 			fork.Parent = p
